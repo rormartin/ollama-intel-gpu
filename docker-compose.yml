@@ -13,8 +13,9 @@ services:
     devices:
       - /dev/dri:/dev/dri
     volumes:
-      - /home/llms/ollama:/root/.ollama
-      - /home/llms/models:/models
+      - type: bind
+        source: ${LOCAL_OLLAMA_FOLDER}
+        target: /root/.ollama
     environment:
       - DEVICE=Arc
       - no_proxy=localhost,127.0.0.1
@@ -31,7 +32,9 @@ services:
     image: ghcr.io/open-webui/open-webui:latest
     container_name: ollama-webui
     volumes:
-      - /home/llms/open-webui:/app/backend/data
+      - type: volume
+        source: openwebui_data
+        target: /app/backend/data
     depends_on:
       - ollama-intel-gpu
     ports:
@@ -40,3 +43,6 @@ services:
       - OLLAMA_BASE_URL=http://ollama-intel-gpu:11434
       - WEBUI_AUTH=False
     restart: unless-stopped
+
+volumes:
+  openwebui_data:
