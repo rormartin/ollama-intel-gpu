@@ -1,0 +1,42 @@
+
+services:
+
+  ollama-intel-gpu:
+    container_name: ollama-intel-gpu
+    image: intelanalytics/ipex-llm-inference-cpp-xpu:latest
+    restart: always
+    privileged: true
+    cpus: 4
+    mem_limit: 24GiB
+    ports:
+      - 11434:11434
+    devices:
+      - /dev/dri:/dev/dri
+    volumes:
+      - /home/llms/ollama:/root/.ollama
+      - /home/llms/models:/models
+    environment:
+      - DEVICE=Arc
+      - no_proxy=localhost,127.0.0.1
+      - ZES_ENABLE_SYSMAN=1
+      - OLLAMA_NUM_GPU=999
+      - OLLAMA_HOST=0.0.0.0:11434
+      - OLLAMA_INTEL_GPU=true
+      - GIN_MODE=release
+      - HWLOC_COMPONENTS=x86
+    entrypoint: ["/bin/bash", "-c"]
+    command: ["source /usr/local/bin/ipex-llm-init --gpu --device Arc && mkdir -p /llm/ollama && cd /llm/ollama && init-ollama && ./ollama serve"]
+
+  ollama-webui:
+    image: ghcr.io/open-webui/open-webui:latest
+    container_name: ollama-webui
+    volumes:
+      - /home/llms/open-webui:/app/backend/data
+    depends_on:
+      - ollama-intel-gpu
+    ports:
+      - 8080:8080
+    environment:
+      - OLLAMA_BASE_URL=http://ollama-intel-gpu:11434
+      - WEBUI_AUTH=False
+    restart: unless-stopped
