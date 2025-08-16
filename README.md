@@ -23,3 +23,16 @@ The variable `LOCAL_OLLAMA_FOLDER` specifies the local directory for Ollama file
 LOCAL_OLLAMA_FOLDER=/ollama/local/folder docker compose up -d
 ```
 
+## How to connect and operate ollama via console
+
+To connect to the running ollama docker container via a console, this command could be executed:
+
+```
+docker exec -it -w /llm/ollama ollama-intel-gpu /bin/bash
+```
+
+The ollama binaries are in the `/llm/ollama`. One example of a ollama command inside the container:
+
+```
+./ollama list
+```
