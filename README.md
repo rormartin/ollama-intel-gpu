@@ -36,3 +36,7 @@ The ollama binaries are in the `/llm/ollama`. One example of a ollama command in
 ```
 ./ollama list
 ```
+
+## Alternative way to use ollama CLI form the container
+
+The script `ollama.sh` mimic the behaviour of the `ollama` command, executed inside of the docker container
